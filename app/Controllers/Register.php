@@ -59,9 +59,8 @@ class Register extends BaseController
         try {
             $userId = $this->userModel->insert($userData);
             if ($userId) {
-                session()->setFlashdata('success', 'Registration successful! Welcome to PowerFlow
-Electric. You can now contact us for your electrical needs.');
-                return redirect()->to('/register');
+                session()->setFlashdata('success', 'Registration successful. Please log in to access the customer management system.');
+                return redirect()->to('/login');
             } else {
                 session()->setFlashdata('error', 'Registration failed. Please try again.');
                 return redirect()->back()->withInput();

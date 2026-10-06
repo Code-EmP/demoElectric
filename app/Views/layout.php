@@ -184,14 +184,26 @@
                         <a class="nav-link <?= (isset($page) && $page == 'services') ? 'active' : '' ?>" href="<?=
                                                                                                                 base_url('services') ?>">Services</a>
                     </li>
-                    <li class="nav-item"></li>
-                    <a class="nav-link <?= (isset($page) && $page == 'contact') ? 'active' : '' ?>" href="<?=
+                    <li class="nav-item">
+                        <a class="nav-link <?= (isset($page) && $page == 'contact') ? 'active' : '' ?>" href="<?=
                                                                                                             base_url('contact') ?>">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= (isset($page) && $page == 'register') ? 'active' : '' ?>" href="<?=
                                                                                                                 base_url('register') ?>">Register</a>
                     </li>
+                    <?php if (session()->get('is_logged_in')): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('dashboard') ?>">Management System</a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-secondary btn-sm px-3" href="<?= base_url('logout') ?>">Log Out</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-primary btn-sm px-3" href="<?= base_url('login') ?>">Log In</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>

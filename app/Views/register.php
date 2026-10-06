@@ -257,8 +257,8 @@
                             </div>
                         </form>
                         <div class="text-center mt-4">
-                            <p class="text-muted">Already have an account? <a href="<?= base_url('contact') ?>"
-                                    class="text-primary-custom fw-semibold">Contact us</a> for assistance.</p>
+                            <p class="text-muted">Already have an account? <a href="<?= base_url('login') ?>"
+                                    class="text-primary-custom fw-semibold">Log in</a>.</p>
                         </div>
                     </div>
                 </div>
