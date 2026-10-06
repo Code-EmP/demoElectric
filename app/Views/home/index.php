@@ -88,6 +88,9 @@
                 <?php if ($message = session()->getFlashdata('error')): ?>
                     <div class="alert alert-danger" role="alert"><?= esc($message) ?></div>
                 <?php endif; ?>
+                <a href="<?= base_url('accounts/new') ?>" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Account
+                </a>
             </div>
 
             <!-- Statistics Cards -->
@@ -120,7 +123,7 @@
 
             <!-- Search and Filter Section -->
             <div class="search-filter-section">
-                <form method="GET" action="<?= base_url() ?>">
+                <form method="GET" action="<?= base_url('dashboard') ?>">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <input type="text" class="form-control" name="search" placeholder="Search by name, account, email, phone..." value="<?= esc($search_keyword ?? '') ?>">
@@ -148,7 +151,7 @@
                 </form>
                 <?php if ($search_keyword || $filter_status || $filter_type): ?>
                     <div class="mt-2">
-                        <a href="<?= base_url() ?>" class="btn btn-sm btn-secondary"><i class="bi bi-x-circle"></i> Clear Filters</a>
+                        <a href="<?= base_url('dashboard') ?>" class="btn btn-sm btn-secondary"><i class="bi bi-x-circle"></i> Clear Filters</a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -190,6 +193,15 @@
                                         <a href="<?= base_url('account/' . $account['id']) ?>" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye"></i> View
                                         </a>
+                                        <a href="<?= base_url('account/' . $account['id'] . '/edit') ?>" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form method="POST" action="<?= base_url('account/' . $account['id'] . '/delete') ?>" class="d-inline" onsubmit="return confirm('Delete this customer account? This action cannot be undone.');">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

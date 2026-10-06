@@ -59,7 +59,7 @@
 
             <!-- Back Button -->
             <div class="mb-4">
-                <a href="<?= base_url() ?>" class="btn btn-secondary">
+                <a href="<?= base_url('dashboard') ?>" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Back to Dashboard
                 </a>
             </div>
@@ -163,7 +163,10 @@
 
             <!-- Action Buttons -->
             <div class="mt-4 text-center">
-                <a href="<?= base_url() ?>" class="btn btn-primary btn-lg">
+                <a href="<?= base_url('account/' . $account['id'] . '/edit') ?>" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-pencil"></i> Edit Account
+                </a>
+                <a href="<?= base_url('dashboard') ?>" class="btn btn-primary btn-lg">
                     <i class="bi bi-house-door-fill"></i> Back to Dashboard
                 </a>
             </div>

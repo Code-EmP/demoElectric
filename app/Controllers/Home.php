@@ -23,8 +23,8 @@ class Home extends BaseController
 
     public function management()
     {
-        if (!session()->get('is_logged_in')) {
-            return redirect()->to('/login');
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
         }
 
         $keyword = trim((string) $this->request->getGet('search'));
@@ -70,8 +70,8 @@ class Home extends BaseController
 
     public function viewAccount(int $id)
     {
-        if (!session()->get('is_logged_in')) {
-            return redirect()->to('/login');
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
         }
 
         $account = $this->customerModel->find($id);
@@ -81,5 +81,139 @@ class Home extends BaseController
         }
 
         return view('home/view_account', ['account' => $account]);
+    }
+
+    public function newAccount()
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        return view('home/account_form', [
+            'title' => 'Add Customer Account',
+            'account' => [],
+            'formAction' => base_url('accounts'),
+        ]);
+    }
+
+    public function createAccount()
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $validation = $this->validateAccountInput();
+        if ($validation !== []) {
+            return redirect()->to('/accounts/new')->withInput()->with('errors', $validation);
+        }
+
+        if (!$this->customerModel->insert($this->accountInput())) {
+            log_message('error', 'Could not create customer account: {errors}', [
+                'errors' => json_encode($this->customerModel->errors()),
+            ]);
+            return redirect()->to('/accounts/new')->withInput()->with('error', 'The account could not be created. Please check the submitted information and try again.');
+        }
+
+        return redirect()->to('/dashboard')->with('success', 'Customer account created successfully.');
+    }
+
+    public function editAccount(int $id)
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $account = $this->customerModel->find($id);
+        if ($account === null) {
+            return redirect()->to('/dashboard')->with('error', 'Account not found.');
+        }
+
+        return view('home/account_form', [
+            'title' => 'Edit Customer Account',
+            'account' => $account,
+            'formAction' => base_url('account/' . $id),
+        ]);
+    }
+
+    public function updateAccount(int $id)
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        if ($this->customerModel->find($id) === null) {
+            return redirect()->to('/dashboard')->with('error', 'Account not found.');
+        }
+
+        $validation = $this->validateAccountInput();
+        if ($validation !== []) {
+            return redirect()->to('/account/' . $id . '/edit')->withInput()->with('errors', $validation);
+        }
+
+        if (!$this->customerModel->update($id, $this->accountInput())) {
+            log_message('error', 'Could not update customer account {id}: {errors}', [
+                'id' => $id,
+                'errors' => json_encode($this->customerModel->errors()),
+            ]);
+            return redirect()->to('/account/' . $id . '/edit')->withInput()->with('error', 'The account could not be updated. Please check the submitted information and try again.');
+        }
+
+        return redirect()->to('/dashboard')->with('success', 'Customer account updated successfully.');
+    }
+
+    public function deleteAccount(int $id)
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        if ($this->customerModel->find($id) === null) {
+            return redirect()->to('/dashboard')->with('error', 'Account not found.');
+        }
+
+        if (!$this->customerModel->delete($id)) {
+            log_message('error', 'Could not delete customer account {id}.', ['id' => $id]);
+            return redirect()->to('/dashboard')->with('error', 'The account could not be deleted. Please try again.');
+        }
+
+        return redirect()->to('/dashboard')->with('success', 'Customer account deleted successfully.');
+    }
+
+    private function requireLogin()
+    {
+        return session()->get('is_logged_in') ? null : redirect()->to('/login');
+    }
+
+    private function validateAccountInput(): array
+    {
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'account_number' => 'required|max_length[50]',
+            'customer_name' => 'required|min_length[2]|max_length[150]',
+            'address' => 'required|max_length[255]',
+            'phone' => 'required|min_length[7]|max_length[20]',
+            'email' => 'required|valid_email|max_length[255]',
+            'meter_number' => 'required|max_length[50]',
+            'connection_type' => 'required|in_list[residential,commercial,industrial]',
+            'status' => 'required|in_list[active,inactive,suspended]',
+        ]);
+
+        return $validation->withRequest($this->request)->run()
+            ? []
+            : $validation->getErrors();
+    }
+
+    private function accountInput(): array
+    {
+        return [
+            'account_number' => trim((string) $this->request->getPost('account_number')),
+            'customer_name' => trim((string) $this->request->getPost('customer_name')),
+            'address' => trim((string) $this->request->getPost('address')),
+            'phone' => trim((string) $this->request->getPost('phone')),
+            'email' => trim((string) $this->request->getPost('email')),
+            'meter_number' => trim((string) $this->request->getPost('meter_number')),
+            'connection_type' => (string) $this->request->getPost('connection_type'),
+            'status' => (string) $this->request->getPost('status'),
+        ];
     }
 }
