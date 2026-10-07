@@ -15,6 +15,9 @@ WORKDIR /var/www/html
 COPY . .
  
 RUN composer install --no-dev --optimize-autoloader
+
+RUN mkdir -p writable/cache writable/logs writable/session
+RUN chmod -R 777 writable
  
 RUN a2enmod rewrite
  
