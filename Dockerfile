@@ -7,7 +7,6 @@ unzip \
 libicu-dev
  
 RUN docker-php-ext-install intl
-RUN docker-php-ext-install pdo_pgsql pgsql
  
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
  
